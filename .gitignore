@@ -64,6 +64,6 @@ yarn-error.log
 .metro-health-check*
 my-upload-key.keystore
 google-services.json
-/src/assets
+/src/assets/config
 # testing
 /coverage
