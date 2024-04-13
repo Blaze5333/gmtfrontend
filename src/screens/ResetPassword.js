@@ -12,7 +12,7 @@ export default function ResetPassword({navigation,route}) {
     const [password, setpassword] = useState('')
     const [confimPass, setconfimPass] = useState('')
     const [openModal, setopenModal] = useState(false)
-    const [loader, setloader] = useState(second)
+    const [loader, setloader] = useState('')
     const verifyAccount=async()=>{
         if(password.length<8){
             ShowError({message:"Password must be at least 8 character"})

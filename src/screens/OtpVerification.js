@@ -8,6 +8,9 @@ import CustomButton from '../components/button/CustomButton'
 import firestore from '@react-native-firebase/firestore'
 import ShowError from '../components/functions/ShowError'
 import Loaders from '../components/modal/Loaders'
+import { BACKEND_URL } from '../assets/config/credentials'
+import axios from 'axios'
+import Snackbar from 'react-native-snackbar'
 const formatNumber = number => `0${number}`.slice(-2);
 
 const getRemaining = (time) => {
@@ -70,6 +73,29 @@ export default function OtpVerification({navigation,route}) {
         }
         
     }
+    const sendotp=()=>{
+     axios.post(`${BACKEND_URL}/generateOtp`,{email:route.params.email}).then((res)=>{
+         console.log(res.data)
+          if(res.data.error){
+              ShowError({message:res.data.message})
+          }
+          else{
+              firestore().collection('otp').add({
+                  email:route.params.email,
+                  otp:res.data.otp,
+                  expiresIn:Date.now()+9*60*1000,
+                  used:0
+              })
+              setRemainingSecs(60*9)
+              Snackbar.show({
+                text:"Otp sent successfully",
+              textColor:"white",
+              duration:Snackbar.LENGTH_SHORT,
+              backgroundColor:"green"
+              })
+          }
+     })
+  }
   return (
    <View style={style.screen}>
     <Loaders loader={loader}/>
@@ -94,7 +120,7 @@ export default function OtpVerification({navigation,route}) {
         </View>
         <View style={style.container}>
         <Text style={{color:'grey',fontSize:18,fontWeight:'normal'}}>Didn't recieve code? </Text>
-        <TouchableOpacity ><CustomText color={lightcolors.text.tertiary} fontSize={18} fontWeight={'normal'} topic={'Resend'}/></TouchableOpacity>
+        <TouchableOpacity onPress={sendotp} ><CustomText color={lightcolors.text.tertiary} fontSize={18} fontWeight={'normal'} topic={'Resend'}/></TouchableOpacity>
         </View>
         <View style={style.container}>
           <Image style={style.icon} tintColor={'grey'} source={require('../assets/images/clock.png')} />
